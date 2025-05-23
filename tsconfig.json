@@ -1,0 +1,24 @@
+{
+	"compilerOptions": {
+		"lib": [
+			"ES2024"
+		],
+		"types": [
+			"node"
+		],
+		"target": "ESNext",
+		"module": "ESNext",
+		"noEmit": true,
+		"strict": true,
+		"noImplicitAny": false,
+		"skipLibCheck": true,
+		"isolatedModules": true,
+		"resolveJsonModule": true,
+		"moduleResolution": "bundler",
+		"useDefineForClassFields": true,
+		"allowImportingTsExtensions": true
+	},
+	"include": [
+		"src"
+	]
+}
