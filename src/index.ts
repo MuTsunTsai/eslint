@@ -50,11 +50,17 @@ interface ConfigOptions {
 	 */
 	vue?: boolean | "auto";
 
-	/** What files to use `eslint-plugin-import` */
-	import?: string[];
+	/** What files to use `eslint-plugin-import`, or detailed settings. */
+	import?: string[] | {
+		/** What files to use `eslint-plugin-import` */
+		files: string[];
 
-	/** Paths to the tsconfig.json files (or the folder). */
-	project?: string[];
+		/** Paths to the tsconfig.json files (or the folder). */
+		project?: string[];
+
+		/** Additional modules to ignore (other than the known ones). */
+		ignore?: string[];
+	};
 
 	/**
 	 * Whether to use `eslint-plugin-html`
@@ -191,11 +197,14 @@ export function createConfig(options: ConfigOptions): Config[] {
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	if(options.import) {
+		// Downward compatibility
+		if(Array.isArray(options.import)) options.import = { files: options.import };
+
 		const ts = pluginImport.flatConfigs.typescript;
 		result.push(
 			{
 				name: "Plugin:import",
-				files: options.import,
+				files: options.import.files,
 				plugins: {
 					import: pluginImport,
 				},
@@ -208,7 +217,16 @@ export function createConfig(options: ConfigOptions): Config[] {
 					"import/newline-after-import": "warn",
 					"import/no-cycle": ["warn", { ignoreExternal: true }],
 					"import/no-duplicates": "warn",
-					"import/no-unresolved": "error",
+					"import/no-unresolved": [
+						"error",
+						{
+							// https://github.com/import-js/eslint-plugin-import/issues/2703
+							ignore: [
+								"eslint-plugin-compat",
+								...options.import.ignore ?? [],
+							],
+						},
+					],
 					"import/order": ["warn", {
 						"groups": [
 							[
@@ -234,7 +252,7 @@ export function createConfig(options: ConfigOptions): Config[] {
 					"import/resolver": {
 						typescript: {
 							noWarnOnMultipleProjects: true,
-							project: options.project ?? [],
+							project: options.import.project ?? [],
 						},
 					},
 				} : {},
@@ -287,7 +305,7 @@ export function createConfig(options: ConfigOptions): Config[] {
 					"import/resolver": {
 						typescript: {
 							noWarnOnMultipleProjects: true,
-							project: options.project ?? [],
+							project: options.import.project ?? [],
 						},
 					},
 				} : {},
