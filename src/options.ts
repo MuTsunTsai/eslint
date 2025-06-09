@@ -35,8 +35,11 @@ export interface ConfigOptions {
 		ignore?: string[];
 	};
 
-	/** The property order to use for `eslint-plugin-package.json` */
-	package?: string[];
+	/**
+	 * The property order to use for `eslint-plugin-package-json`,
+	 * or a factory function that modifies the default ordering list.
+	 */
+	package?: string[] | ((order: string[]) => string[]);
 
 	/**
 	 * Whether to use `eslint-plugin-html`

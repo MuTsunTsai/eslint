@@ -9,6 +9,7 @@ import pluginJs from "@eslint/js";
 import pluginTs from "typescript-eslint";
 import pluginVue from "eslint-plugin-vue";
 import pluginPackageJson from "eslint-plugin-package-json";
+import { sortOrder } from "sort-package-json";
 
 import stylistic from "./stylistic";
 import localRules from "./local-rules";
@@ -166,6 +167,7 @@ export function createConfig(options: ConfigOptions): Config[] {
 			name: "Package.json override",
 			files: ["**/package.json"],
 			rules: {
+				"max-lines": "off",
 				"package-json/require-author": "warn",
 				"@stylistic/comma-dangle": "off",
 				"@stylistic/eol-last": "off",
@@ -173,7 +175,9 @@ export function createConfig(options: ConfigOptions): Config[] {
 				"@stylistic/semi": "off",
 				...(options.package ? {
 					"package-json/order-properties": [
-						"warn", { order: options.package },
+						"warn", {
+							order: Array.isArray(options.package) ? options.package : options.package(sortOrder),
+						},
 					],
 				} : {}),
 			},
