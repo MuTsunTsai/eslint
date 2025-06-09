@@ -1,15 +1,10 @@
 import pluginStyle from "@stylistic/eslint-plugin";
 
+import { errorToWarn } from "./util";
+
 import type { Config } from "@eslint/config-helpers";
 
-// Severities are all "error" in presets.
-// We change those to "warn" here.
-const preset = pluginStyle.configs.recommended;
-for(const key in preset.rules) {
-	const rule = preset.rules[key]!;
-	if(rule == "error") preset.rules[key] = "warn";
-	else if(Array.isArray(rule)) rule[0] = "warn";
-}
+const preset = errorToWarn(pluginStyle.configs.recommended);
 
 export default [
 	{

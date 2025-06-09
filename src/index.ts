@@ -13,6 +13,7 @@ import pluginPackageJson from "eslint-plugin-package-json";
 import stylistic from "./stylistic";
 import localRules from "./local-rules";
 import general from "./general";
+import { errorToWarn } from "./util";
 
 import type { Linter } from "eslint";
 import type { Config } from "@eslint/config-helpers";
@@ -201,11 +202,12 @@ export function createConfig(options: ConfigOptions): Config[] {
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	result.push(
-		pluginPackageJson.configs.recommended,
+		errorToWarn(pluginPackageJson.configs.recommended),
 		{
 			name: "Package.json files",
 			files: ["**/package.json"],
 			rules: {
+				"package-json/require-author": "warn",
 				"@stylistic/comma-dangle": "off",
 				"@stylistic/eol-last": "off",
 				"@stylistic/quote-props": "off",
