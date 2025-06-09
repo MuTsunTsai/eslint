@@ -13,7 +13,7 @@ import pluginPackageJson from "eslint-plugin-package-json";
 import stylistic from "./stylistic";
 import localRules from "./local-rules";
 import general from "./general";
-import { errorToWarn } from "./util";
+import { errorToWarn, expandBraces } from "./util";
 
 import type { Linter } from "eslint";
 import type { Config, Plugin } from "@eslint/config-helpers";
@@ -225,66 +225,69 @@ export function createConfig(options: ConfigOptions): Config[] {
 		if(Array.isArray(options.import)) options.import = { files: options.import };
 
 		const ts = pluginImport.flatConfigs.typescript;
-		result.push(
-			{
-				name: "Plugin:import",
-				files: options.import.files,
-				plugins: {
-					...(options.typescript ? {
-						"@typescript-eslint": pluginTs.plugin as Plugin,
-					} : {}),
-					import: pluginImport,
-				},
-				rules: {
-					...(options.typescript ? {
-						...ts.rules,
-						"@typescript-eslint/consistent-type-imports": ["warn", { prefer: "type-imports" }],
-					} : {}),
-					"import/consistent-type-specifier-style": ["warn", "prefer-top-level"],
-					"import/newline-after-import": "warn",
-					"import/no-cycle": ["warn", { ignoreExternal: true }],
-					"import/no-duplicates": "warn",
-					"import/no-unresolved": [
-						"error",
-						{
-							// https://github.com/import-js/eslint-plugin-import/issues/2703
-							ignore: [
-								"eslint-plugin-compat",
-								...options.import.ignore ?? [],
-							],
-						},
-					],
-					"import/order": ["warn", {
-						"groups": [
-							[
-								"builtin",
-								"external",
-							],
-							[
-								"internal",
-								"parent",
-								"sibling",
-								"index",
-								"object",
-							],
-							"type",
+		result.push({
+			name: "Plugin:import",
+			files: options.import.files,
+			plugins: {
+				import: pluginImport,
+			},
+			rules: {
+				"import/consistent-type-specifier-style": ["warn", "prefer-top-level"],
+				"import/newline-after-import": "warn",
+				"import/no-cycle": ["warn", { ignoreExternal: true }],
+				"import/no-duplicates": "warn",
+				"import/no-unresolved": [
+					"error",
+					{
+						// https://github.com/import-js/eslint-plugin-import/issues/2703
+						ignore: [
+							"eslint-plugin-compat",
+							...options.import.ignore ?? [],
 						],
-						"newlines-between": "always",
-					}],
-					"no-duplicate-imports": "off",
-					"sort-imports": "off",
-				},
-				settings: options.typescript ? {
-					...ts.settings,
-					"import/resolver": {
-						typescript: {
-							noWarnOnMultipleProjects: true,
-							project: options.import.project ?? [],
-						},
 					},
-				} : {},
-			}
-		);
+				],
+				"import/order": ["warn", {
+					"groups": [
+						[
+							"builtin",
+							"external",
+						],
+						[
+							"internal",
+							"parent",
+							"sibling",
+							"index",
+							"object",
+						],
+						"type",
+					],
+					"newlines-between": "always",
+				}],
+				"no-duplicate-imports": "off",
+				"sort-imports": "off",
+			},
+			settings: options.typescript ? {
+				...ts.settings,
+				"import/resolver": {
+					typescript: {
+						noWarnOnMultipleProjects: true,
+						project: options.import.project ?? [],
+					},
+				},
+			} : {},
+		});
+		if(options.typescript) {
+			const files = options.import.files
+				.flatMap(f => expandBraces(f))
+				.filter(f => f.match(/\.(vue|ts|tsx|mts|cts)$/i));
+			result.push({
+				name: "Plugin:import TypeScript",
+				files,
+				rules: {
+					"@typescript-eslint/consistent-type-imports": ["warn", { prefer: "type-imports" }],
+				},
+			});
+		}
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
