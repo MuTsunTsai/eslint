@@ -16,7 +16,7 @@ import general from "./general";
 import { errorToWarn } from "./util";
 
 import type { Linter } from "eslint";
-import type { Config } from "@eslint/config-helpers";
+import type { Config, Plugin } from "@eslint/config-helpers";
 import type { FixupPluginDefinition } from "@eslint/compat";
 
 const compat = new FlatCompat();
@@ -230,6 +230,9 @@ export function createConfig(options: ConfigOptions): Config[] {
 				name: "Plugin:import",
 				files: options.import.files,
 				plugins: {
+					...(options.typescript ? {
+						"@typescript-eslint": pluginTs.plugin as Plugin,
+					} : {}),
 					import: pluginImport,
 				},
 				rules: {
