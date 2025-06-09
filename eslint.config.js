@@ -7,7 +7,7 @@ export default [
 	}),
 	{
 		rules: {
-			"@typescript-eslint/no-magic-numbers": "off",
+			// "@typescript-eslint/no-magic-numbers": "off",
 			"complexity": "off",
 			"max-lines": "off",
 			"max-lines-per-function": "off",

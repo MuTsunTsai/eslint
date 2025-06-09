@@ -1,5 +1,7 @@
 import type { Config } from "@eslint/config-helpers";
 
+const MAX_PARAMS = 6;
+
 export default {
 	name: "General rules",
 	rules: {
@@ -21,7 +23,7 @@ export default {
 		"max-lines": ["warn", { skipBlankLines: true, skipComments: true }],
 		"max-lines-per-function": ["warn", { skipComments: true }],
 		"max-nested-callbacks": "warn",
-		"max-params": ["warn", 6],
+		"max-params": ["warn", MAX_PARAMS],
 		"new-cap": "warn",
 		"no-alert": "warn",
 		"no-array-constructor": "warn",

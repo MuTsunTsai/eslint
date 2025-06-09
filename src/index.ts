@@ -8,6 +8,7 @@ import pluginImport from "eslint-plugin-import";
 import pluginJs from "@eslint/js";
 import pluginTs from "typescript-eslint";
 import pluginVue from "eslint-plugin-vue";
+import pluginPackageJson from "eslint-plugin-package-json";
 
 import stylistic from "./stylistic";
 import localRules from "./local-rules";
@@ -148,7 +149,10 @@ export function createConfig(options: ConfigOptions): Config[] {
 		const files = [TS];
 		if(options.vue) files.push(VUE);
 		result.push(
-			...pluginTs.configs.recommended as Config[],
+			...(pluginTs.configs.recommended as Config[]).map(config => ({
+				...config,
+				files,
+			})),
 			{
 				name: "General:TypeScript",
 				files,
@@ -191,6 +195,24 @@ export function createConfig(options: ConfigOptions): Config[] {
 			}
 		);
 	}
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Package.json
+	/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	result.push(
+		pluginPackageJson.configs.recommended,
+		{
+			name: "Package.json files",
+			files: ["**/package.json"],
+			rules: {
+				"@stylistic/comma-dangle": "off",
+				"@stylistic/eol-last": "off",
+				"@stylistic/quote-props": "off",
+				"@stylistic/semi": "off",
+			},
+		}
+	);
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Import

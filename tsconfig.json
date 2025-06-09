@@ -6,6 +6,7 @@
 		"types": [
 			"node"
 		],
+		"baseUrl": ".",
 		"target": "ESNext",
 		"module": "ESNext",
 		"noEmit": true,
@@ -17,8 +18,5 @@
 		"moduleResolution": "bundler",
 		"useDefineForClassFields": true,
 		"allowImportingTsExtensions": true
-	},
-	"include": [
-		"src"
-	]
+	}
 }
