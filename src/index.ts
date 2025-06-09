@@ -15,8 +15,9 @@ import localRules from "./local-rules";
 import general from "./general";
 import { errorToWarn, expandBraces } from "./util";
 
+import type { ConfigOptions } from "./options";
 import type { Linter } from "eslint";
-import type { Config, Plugin } from "@eslint/config-helpers";
+import type { Config } from "@eslint/config-helpers";
 import type { FixupPluginDefinition } from "@eslint/compat";
 
 const compat = new FlatCompat();
@@ -27,48 +28,6 @@ export function legacyPlugin(name: string, alias: string = name): FixupPluginDef
 	const plugin = compat.plugins(name)[0]?.plugins?.[alias];
 	if(!plugin) throw new Error(`Unable to resolve plugin ${name} and/or alias ${alias}`);
 	return fixupPluginRules(plugin);
-}
-
-interface ConfigOptions {
-	/** Add global ignore globs. */
-	ignores?: string[];
-
-	/** The globs to apply global declarations from `globals`. */
-	globals?: {
-		cjs?: string[];
-		esm?: string[];
-		browser?: string[];
-	};
-
-	/**
-	 * Whether to use `typescript-eslint`
-	 * @default "auto"
-	 */
-	typescript?: boolean | "auto";
-
-	/**
-	 * Whether to use `eslint-plugin-vue`
-	 * @default "auto"
-	 */
-	vue?: boolean | "auto";
-
-	/** What files to use `eslint-plugin-import`, or detailed settings. */
-	import?: string[] | {
-		/** What files to use `eslint-plugin-import` */
-		files: string[];
-
-		/** Paths to the tsconfig.json files (or the folder). */
-		project?: string[];
-
-		/** Additional modules to ignore (other than the known ones). */
-		ignore?: string[];
-	};
-
-	/**
-	 * Whether to use `eslint-plugin-html`
-	 * @default true
-	 */
-	html?: boolean | Partial<Linter.RulesRecord>;
 }
 
 const TS = "**/*.{ts,tsx,mts,cts}";
@@ -204,7 +163,7 @@ export function createConfig(options: ConfigOptions): Config[] {
 	result.push(
 		errorToWarn(pluginPackageJson.configs.recommended),
 		{
-			name: "Package.json files",
+			name: "Package.json override",
 			files: ["**/package.json"],
 			rules: {
 				"package-json/require-author": "warn",
@@ -212,6 +171,11 @@ export function createConfig(options: ConfigOptions): Config[] {
 				"@stylistic/eol-last": "off",
 				"@stylistic/quote-props": "off",
 				"@stylistic/semi": "off",
+				...(options.package ? {
+					"package-json/order-properties": [
+						"warn", { order: options.package },
+					],
+				} : {}),
 			},
 		}
 	);
