@@ -7,7 +7,7 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/github:MuTsunTsai/eslint"
+		"url": "https://github.com/MuTsunTsai/eslint"
 	},
 	"license": "MIT",
 	"author": "Mu-Tsun Tsai <don.m.t.tsai@gmail.com> (https://github.com/MuTsunTsai)",
