@@ -2,22 +2,20 @@ import { FlatCompat } from "@eslint/eslintrc";
 import { fixupPluginRules } from "@eslint/compat";
 import fs from "node:fs";
 import path from "node:path";
-import globals from "globals";
-import pluginHtml from "eslint-plugin-html";
-import pluginImport from "eslint-plugin-import";
 import pluginJs from "@eslint/js";
-import pluginTs from "typescript-eslint";
-import pluginVue from "eslint-plugin-vue";
-import pluginPackageJson from "eslint-plugin-package-json";
-import { sortOrder } from "sort-package-json";
 
-import stylistic from "./stylistic";
-import localRules from "./local-rules";
-import general from "./general";
-import { errorToWarn, expandBraces } from "./util";
+import stylistic from "./plugins/stylistic";
+import localRules from "./plugins/local-rules";
+import general from "./plugins/general";
+import { addTests } from "./plugins/tests";
+import { addGlobals } from "plugins/globals";
+import { addHtml, HTML } from "plugins/html";
+import { addVue, VUE } from "plugins/vue";
+import { addImport } from "plugins/import";
+import { addPackageJson } from "plugins/package";
+import { addTypeScript, TS } from "plugins/typescript";
 
 import type { ConfigOptions } from "./options";
-import type { Linter } from "eslint";
 import type { Config } from "@eslint/config-helpers";
 import type { FixupPluginDefinition } from "@eslint/compat";
 
@@ -30,10 +28,6 @@ export function legacyPlugin(name: string, alias: string = name): FixupPluginDef
 	if(!plugin) throw new Error(`Unable to resolve plugin ${name} and/or alias ${alias}`);
 	return fixupPluginRules(plugin);
 }
-
-const TS = "**/*.{ts,tsx,mts,cts}";
-const VUE = "**/*.vue";
-const HTML = "**/*.{htm,html}";
 
 export function createConfig(options: ConfigOptions): Config[] {
 	const result: Config[] = [];
@@ -103,275 +97,16 @@ export function createConfig(options: ConfigOptions): Config[] {
 	);
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
-	// TypeScript
+	// Plugins
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	if(options.typescript) {
-		const files = [TS];
-		if(options.vue) files.push(VUE);
-		result.push(
-			...(pluginTs.configs.recommended as Config[]).map(config => ({
-				...config,
-				files,
-			})),
-			{
-				name: "General:TypeScript",
-				files,
-				rules: {
-					"@typescript-eslint/ban-ts-comment": "off",
-					"@typescript-eslint/class-methods-use-this": ["warn", {
-						ignoreOverrideMethods: true,
-						ignoreClassesThatImplementAnInterface: "public-fields",
-					}],
-					"@typescript-eslint/no-empty-function": "warn",
-					"@typescript-eslint/no-empty-object-type": ["warn", { allowInterfaces: "always" }],
-					"@typescript-eslint/no-explicit-any": ["warn", { ignoreRestArgs: true }],
-					"@typescript-eslint/no-invalid-this": "error",
-					"@typescript-eslint/no-loop-func": "warn",
-					"@typescript-eslint/no-magic-numbers": ["warn", {
-						ignore: [-1, 0, 1, 2],
-						ignoreArrayIndexes: true,
-						ignoreDefaultValues: true,
-						ignoreEnums: true,
-						ignoreNumericLiteralTypes: true,
-						ignoreReadonlyClassProperties: true,
-					}],
-					"@typescript-eslint/no-namespace": "off",
-					"@typescript-eslint/no-shadow": "warn",
-					"@typescript-eslint/no-this-alias": ["warn", {
-						allowDestructuring: true,
-						allowedNames: ["cursor"],
-					}],
-					"@typescript-eslint/no-unsafe-declaration-merging": "off",
-					"@typescript-eslint/no-unused-expressions": "warn",
-					"@typescript-eslint/no-unused-vars": "off",
-					"@typescript-eslint/no-useless-constructor": ["warn"],
-					"@typescript-eslint/triple-slash-reference": "off",
-					"no-empty-function": "off",
-					"no-invalid-this": "off",
-					"no-loop-func": "off",
-					"no-shadow": "off",
-					"no-undef": "off", // This is redundant as TypeScript catches things that are really undefined
-				},
-			}
-		);
-	}
-
-	/////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Package.json
-	/////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	result.push(
-		errorToWarn(pluginPackageJson.configs.recommended),
-		{
-			name: "Package.json override",
-			files: ["**/package.json"],
-			rules: {
-				"max-lines": "off",
-				"package-json/require-author": "warn",
-				"@stylistic/comma-dangle": "off",
-				"@stylistic/eol-last": "off",
-				"@stylistic/quote-props": "off",
-				"@stylistic/semi": "off",
-				...(options.package ? {
-					"package-json/order-properties": [
-						"warn", {
-							order: Array.isArray(options.package) ? options.package : options.package(sortOrder),
-						},
-					],
-				} : {}),
-			},
-		}
-	);
-
-	/////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Import
-	/////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	if(options.import) {
-		// Downward compatibility
-		if(Array.isArray(options.import)) options.import = { files: options.import };
-
-		const ts = pluginImport.flatConfigs.typescript;
-		result.push({
-			name: "Plugin:import",
-			files: options.import.files,
-			plugins: {
-				import: pluginImport,
-			},
-			rules: {
-				"import/consistent-type-specifier-style": ["warn", "prefer-top-level"],
-				"import/newline-after-import": "warn",
-				"import/no-cycle": ["warn", { ignoreExternal: true }],
-				"import/no-duplicates": "warn",
-				"import/no-unresolved": [
-					"error",
-					{
-						// https://github.com/import-js/eslint-plugin-import/issues/2703
-						ignore: [
-							"eslint-plugin-compat",
-							...options.import.ignore ?? [],
-						],
-					},
-				],
-				"import/order": ["warn", {
-					"groups": [
-						[
-							"builtin",
-							"external",
-						],
-						[
-							"internal",
-							"parent",
-							"sibling",
-							"index",
-							"object",
-						],
-						"type",
-					],
-					"newlines-between": "always",
-				}],
-				"no-duplicate-imports": "off",
-				"sort-imports": "off",
-			},
-			settings: options.typescript ? {
-				...ts.settings,
-				"import/resolver": {
-					typescript: {
-						noWarnOnMultipleProjects: true,
-						project: options.import.project ?? [],
-					},
-				},
-			} : {},
-		});
-		if(options.typescript) {
-			const files = options.import.files
-				.flatMap(f => expandBraces(f))
-				.filter(f => f.match(/\.(vue|ts|tsx|mts|cts)$/i));
-			result.push({
-				name: "Plugin:import TypeScript",
-				files,
-				rules: {
-					"@typescript-eslint/consistent-type-imports": ["warn", { prefer: "type-imports" }],
-				},
-			});
-		}
-	}
-
-	/////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Vue
-	/////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	if(options.vue) {
-		const files = [VUE];
-		result.push(
-			...pluginVue.configs["flat/essential"].map(cfg => ({
-				...cfg,
-				files,
-			})),
-			{
-				name: "General:vue",
-				files,
-				languageOptions: {
-					parserOptions: {
-						parser: options.typescript ? pluginTs.parser : undefined,
-						extraFileExtensions: [".vue"],
-					},
-					globals: globals.browser,
-				},
-				rules: {
-					"@stylistic/indent": "off", // see vue
-					"@stylistic/max-len": "off", // see vue
-					"vue/max-len": ["warn", {
-						code: 200,
-						ignoreComments: true,
-						ignoreHTMLAttributeValues: true,
-						ignoreStrings: true,
-						tabWidth: 4,
-					}],
-					"vue/multi-word-component-names": "off",
-					"vue/no-mutating-props": ["warn", { shallowOnly: true }],
-					"vue/script-indent": ["warn", "tab", {
-						baseIndent: 1,
-						ignores: [],
-						switchCase: 1,
-					}],
-				},
-				settings: options.import ? {
-					"import/extensions": [".vue"],
-					"import/external-module-folders": ["node_modules", "node_modules/@types"],
-					"import/resolver": {
-						typescript: {
-							noWarnOnMultipleProjects: true,
-							project: options.import.project ?? [],
-						},
-					},
-				} : {},
-			}
-		);
-	}
-
-	/////////////////////////////////////////////////////////////////////////////////////////////////////
-	// HTML
-	/////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	if(options.html) {
-		const rules: Partial<Linter.RulesRecord> = {
-			// Typical GA codes will trigger these two,
-			// so we add them as default rules.
-			"no-undef": "off",
-			"prefer-rest-params": "off",
-		};
-		if(typeof options.html == "object") {
-			Object.assign(rules, options.html);
-		}
-		result.push({
-			name: "General:HTML",
-			files: [HTML],
-			plugins: {
-				html: pluginHtml,
-			},
-			rules,
-		});
-	}
-
-	/////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Globals
-	/////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	if(options.globals?.cjs) {
-		result.push({
-			name: "Node CommonJS files",
-			files: options.globals.cjs,
-			languageOptions: {
-				globals: globals.node,
-				sourceType: "commonjs",
-			},
-			rules: options.typescript ? {
-				"@typescript-eslint/no-require-imports": "off",
-			} : {},
-		});
-	}
-	if(options.globals?.esm) {
-		result.push({
-			name: "Node ESModule files",
-			files: options.globals.esm,
-			languageOptions: {
-				globals: globals.nodeBuiltin,
-			},
-		});
-	}
-	if(options.globals?.browser) {
-		result.push(
-			{
-				name: "Browser global",
-				files: options.globals.browser,
-				languageOptions: {
-					globals: globals.browser,
-				},
-			}
-		);
-	}
+	addTypeScript(result, options);
+	addPackageJson(result, options);
+	addImport(result, options);
+	addVue(result, options);
+	addHtml(result, options);
+	addGlobals(result, options);
+	addTests(result, options);
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Other

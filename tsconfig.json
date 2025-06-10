@@ -6,7 +6,7 @@
 		"types": [
 			"node"
 		],
-		"baseUrl": ".",
+		"baseUrl": "./src",
 		"target": "ESNext",
 		"module": "ESNext",
 		"noEmit": true,
@@ -18,5 +18,9 @@
 		"moduleResolution": "bundler",
 		"useDefineForClassFields": true,
 		"allowImportingTsExtensions": true
-	}
+	},
+	"include": [
+		"./*.ts",
+		"./src/**/*.ts"
+	]
 }

@@ -1,6 +1,6 @@
 import pluginStyle from "@stylistic/eslint-plugin";
 
-import { errorToWarn } from "./util";
+import { errorToWarn } from "../utils";
 
 import type { Config } from "@eslint/config-helpers";
 

@@ -46,4 +46,10 @@ export interface ConfigOptions {
 	 * @default true
 	 */
 	html?: boolean | Partial<Linter.RulesRecord>;
+
+	/** What files to use `eslint-plugin-mocha` */
+	mocha?: string[];
+
+	/** What files to use `eslint-plugin-playwright` */
+	playwright?: string[];
 }
