@@ -1,4 +1,5 @@
-/* eslint-disable local-rules/ascii-comments */
+import { expand } from "@isaacs/brace-expansion";
+
 import type { Config } from "@eslint/config-helpers";
 
 /**
@@ -13,49 +14,8 @@ export function errorToWarn(config: Config): Config {
 	return config;
 }
 
-/**
- * Expands brace expressions in a glob-like string into all possible combinations.
- *
- * This function looks for brace patterns of the form `{a,b,c}` and generates
- * a list of strings with each option substituted in place. It supports multiple
- * and nested brace expressions.
- *
- * For example:
- *   - `"src/**‌/*.{ts,tsx}"` becomes `["src/**‌/*.ts", "src/**‌/*.tsx"]`
- *   - `"src/{a,b}/**‌/*.{js,ts}"` becomes
- *     ```
- *     [
- *       "src/a/**‌/*.js",
- *       "src/a/**‌/*.ts",
- *       "src/b/**‌/*.js",
- *       "src/b/**‌/*.ts"
- *     ]
- *     ```
- *
- * @param glob - The input string containing brace expressions.
- * @returns An array of strings with all brace expressions expanded.
- */
-export function expandBraces(glob: string): string[] {
-	const bracePattern = /\{([^{}]+)\}/;
-
-	function helper(pattern: string): string[] {
-		const match = bracePattern.exec(pattern);
-		if(!match) {
-			return [pattern];
-		}
-
-		const [whole, inner] = match;
-		const parts = inner.split(",");
-		const results: string[] = [];
-
-		for(const part of parts) {
-			const replaced = pattern.replace(whole, part);
-			results.push(...helper(replaced));
-		}
-		return results;
-	}
-
-	return helper(glob);
+export function extensionPartToRegExp(extPart: string): RegExp {
+	return new RegExp("\\." + extPart.replace(/\?/g, "[^\\\\/]").replace(/\*/g, "[^\\\\/]*") + "$");
 }
 
 export function restrictGlobToExtension(glob: string, ext: string): string | null {
@@ -76,7 +36,7 @@ export function restrictGlobToExtension(glob: string, ext: string): string | nul
 	if(pattern.includes(".")) {
 		const filenameParts = pattern.split(".");
 		const extPart = filenameParts.pop()!;
-		if(!new RegExp("\\." + extPart.replace(/\*/g, ".*") + "$").test(ext)) {
+		if(!extensionPartToRegExp(extPart).test(ext)) {
 			return null;
 		}
 		return dir + filenameParts.join(".") + ext;
@@ -88,7 +48,7 @@ export function restrictGlobToExtension(glob: string, ext: string): string | nul
 
 export function restrictGlobsToExtensions(globs: string[], ext: string[]): string[] {
 	return globs
-		.flatMap(f => expandBraces(f))
+		.flatMap(f => expand(f))
 		.flatMap(f => ext.map(e => restrictGlobToExtension(f, e)))
 		.filter(f => f) as string[];
 }
