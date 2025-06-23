@@ -14,6 +14,9 @@ export default defineConfig({
 			syntax: "es2024",
 		},
 	],
+	performance: {
+		buildCache: true,
+	},
 	output: {
 		target: "node",
 	},

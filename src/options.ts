@@ -33,6 +33,13 @@ export interface ConfigOptions {
 
 		/** Additional modules to ignore (other than the known ones). */
 		ignore?: string[];
+
+		/**
+		 * This option disable reporting of errors if a cycle is detected with at least one dynamic import.
+		 * @default true
+		 * @see https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-cycle.md#allowunsafedynamiccyclicdependency
+		 */
+		allowUnsafeDynamicCyclicDependency?: boolean;
 	};
 
 	/**

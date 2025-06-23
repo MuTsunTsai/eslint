@@ -20,7 +20,13 @@ export function addImport(result: Config[], options: ConfigOptions): void {
 			rules: {
 				"import/consistent-type-specifier-style": ["warn", "prefer-top-level"],
 				"import/newline-after-import": "warn",
-				"import/no-cycle": ["warn", { ignoreExternal: true }],
+				"import/no-cycle": [
+					"warn",
+					{
+						ignoreExternal: true,
+						allowUnsafeDynamicCyclicDependency: options.import.allowUnsafeDynamicCyclicDependency ?? true,
+					},
+				],
 				"import/no-duplicates": "warn",
 				"import/no-unresolved": [
 					"error",
