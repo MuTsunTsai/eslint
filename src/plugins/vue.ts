@@ -28,6 +28,8 @@ export function addVue(result: Config[], options: ConfigOptions): void {
 				rules: {
 					"@stylistic/indent": "off", // see vue
 					"@stylistic/max-len": "off", // see vue
+					"vue/html-indent": ["warn", "tab"],
+					"vue/html-self-closing": "warn",
 					"vue/max-len": ["warn", {
 						code: 200,
 						ignoreComments: true,
