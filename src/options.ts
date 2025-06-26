@@ -18,6 +18,12 @@ export interface ConfigOptions {
 	typescript?: boolean | "auto";
 
 	/**
+	 * Whether non-ascii comments are allowed.
+	 * @default false
+	 */
+	nonAsciiComments?: boolean;
+
+	/**
 	 * Whether to use `eslint-plugin-vue`
 	 * @default "auto"
 	 */

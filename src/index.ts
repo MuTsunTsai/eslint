@@ -90,7 +90,7 @@ export function createConfig(options: ConfigOptions): Config[] {
 				"local-rules": localRules,
 			},
 			rules: {
-				"local-rules/ascii-comments": "error",
+				"local-rules/ascii-comments": options.nonAsciiComments ? "off" : "error",
 				"local-rules/single-line-control-statement-spacing": "warn",
 			},
 		}
