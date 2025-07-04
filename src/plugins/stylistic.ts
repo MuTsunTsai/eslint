@@ -1,4 +1,5 @@
 import pluginStyle from "@stylistic/eslint-plugin";
+import { after } from "node:test";
 
 import { errorToWarn } from "../utils";
 
@@ -70,6 +71,7 @@ export default [
 						if: { after: false },
 						for: { after: false },
 						while: { after: false },
+						switch: { after: false },
 					},
 				},
 			],
