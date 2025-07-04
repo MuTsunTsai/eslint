@@ -63,7 +63,16 @@ export default [
 					mode: "strict",
 				},
 			],
-			"@stylistic/keyword-spacing": "off", // VS Code handles this already
+			"@stylistic/keyword-spacing": [
+				"warn",
+				{
+					overrides: {
+						if: { after: false },
+						for: { after: false },
+						while: { after: false },
+					},
+				},
+			],
 			"@stylistic/lines-between-class-members": "off",
 			"@stylistic/max-len": [
 				"warn",
@@ -118,6 +127,7 @@ export default [
 					anonymous: "never",
 					asyncArrow: "always",
 					named: "never",
+					catch: "never",
 				},
 			],
 			"@stylistic/spaced-comment": "off",
