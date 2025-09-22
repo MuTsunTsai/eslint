@@ -1,5 +1,4 @@
 import pluginStyle from "@stylistic/eslint-plugin";
-import { after } from "node:test";
 
 import { errorToWarn } from "../utils";
 
@@ -118,7 +117,7 @@ export default [
 				"warn",
 				"double",
 				{
-					allowTemplateLiterals: true,
+					allowTemplateLiterals: "always",
 					avoidEscape: true,
 				},
 			],

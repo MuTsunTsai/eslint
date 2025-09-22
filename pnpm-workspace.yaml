@@ -1,0 +1,10 @@
+minimumReleaseAge: 1440
+onlyBuiltDependencies:
+  - "@swc/core"
+  - core-js
+  - esbuild
+  - oxc-resolver
+  - unrs-resolver
+peerDependencyRules:
+  allowAny:
+    - eslint
