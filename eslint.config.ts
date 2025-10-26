@@ -1,10 +1,12 @@
+import { defineConfig } from "eslint/config";
+
 import { createConfig } from "./dist/index.js";
 
-export default [
+export default defineConfig([
 	...createConfig({
 		ignores: ["{node_modules,dist,.rslib}/**/*"],
 		import: {
-			files: ["**/*.ts"],
+			files: ["**/*.ts", "eslint.config.ts"],
 			project: [
 				"src",
 				"test",
@@ -22,4 +24,4 @@ export default [
 			"max-lines-per-function": "off",
 		},
 	},
-];
+]);
