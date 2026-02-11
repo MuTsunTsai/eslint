@@ -15,6 +15,13 @@ export default [
 		name: "Stylistic override",
 		rules: {
 			"@stylistic/array-bracket-newline": ["warn", "consistent"],
+			"@stylistic/arrow-spacing": [
+				"warn",
+				{
+					before: true,
+					after: true,
+				},
+			],
 			"@stylistic/arrow-parens": ["warn", "as-needed"],
 			"@stylistic/brace-style": [
 				"warn",
@@ -138,9 +145,7 @@ export default [
 					after: true,
 					before: false,
 					overrides: {
-						arrow: {
-							before: true,
-						},
+						arrow: "ignore",
 					},
 				},
 			],
