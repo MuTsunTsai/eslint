@@ -1,9 +1,12 @@
+import { fixupPluginRules } from "@eslint/compat";
 import pluginImport from "eslint-plugin-import";
 
 import { restrictGlobsToExtensions } from "utils";
 
 import type { ConfigOptions } from "options";
 import type { Config } from "@eslint/config-helpers";
+
+const importPlugin = fixupPluginRules(pluginImport);
 
 export function addImport(result: Config[], options: ConfigOptions): void {
 	if(options.import) {
@@ -15,7 +18,7 @@ export function addImport(result: Config[], options: ConfigOptions): void {
 			name: "Plugin:import",
 			files: options.import.files,
 			plugins: {
-				import: pluginImport,
+				import: importPlugin,
 			},
 			rules: {
 				"import/consistent-type-specifier-style": ["warn", "prefer-top-level"],
