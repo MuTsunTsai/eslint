@@ -5,6 +5,7 @@
 	"keywords": [
 		"eslint"
 	],
+	"sideEffects": false,
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/MuTsunTsai/eslint"
@@ -32,35 +33,35 @@
 		"test": "mocha"
 	},
 	"dependencies": {
-		"@eslint/compat": "^2.0.2",
-		"@eslint/config-helpers": "^0.5.2",
-		"@eslint/eslintrc": "^3.3.4",
+		"@eslint/compat": "^2.0.3",
+		"@eslint/config-helpers": "^0.5.3",
+		"@eslint/eslintrc": "^3.3.5",
 		"@eslint/js": "^10.0.1",
 		"@isaacs/brace-expansion": "^5.0.1",
-		"@stylistic/eslint-plugin": "^5.9.0",
+		"@stylistic/eslint-plugin": "^5.10.0",
 		"eslint-import-resolver-typescript": "^4.4.4",
 		"eslint-plugin-html": "^8.1.4",
 		"eslint-plugin-import": "^2.32.0",
 		"eslint-plugin-mocha": "^11.2.0",
-		"eslint-plugin-package-json": "^0.89.2",
-		"eslint-plugin-playwright": "^2.9.0",
+		"eslint-plugin-package-json": "^0.89.4",
+		"eslint-plugin-playwright": "^2.10.1",
 		"eslint-plugin-vue": "^10.8.0",
 		"globals": "^17.4.0",
 		"sort-package-json": "^3.6.1",
-		"typescript-eslint": "^8.56.1",
+		"typescript-eslint": "^8.57.2",
 		"vue-eslint-parser": "^10.4.0"
 	},
 	"devDependencies": {
-		"@eslint/config-inspector": "^1.4.2",
+		"@eslint/config-inspector": "^1.5.0",
 		"@hyperse/ts-node": "^1.1.0",
-		"@microsoft/api-extractor": "^7.57.6",
+		"@microsoft/api-extractor": "^7.57.7",
 		"@rslib/core": "^0.19.6",
 		"@types/chai": "^5.2.3",
 		"@types/estree": "^1.0.8",
 		"@types/mocha": "^10.0.10",
-		"@types/node": "^25.3.3",
+		"@types/node": "^25.5.0",
 		"chai": "^6.2.2",
-		"eslint": "^10.0.2",
+		"eslint": "^10.1.0",
 		"mocha": "^11.7.5"
 	},
 	"peerDependencies": {
