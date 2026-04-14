@@ -44,7 +44,7 @@ export function createConfig(options: ConfigOptions): Config[] {
 		const json = JSON.parse(file);
 
 		function has(name: string): boolean {
-			return name in json.dependencies || name in json.devDependencies;
+			return name in (json.dependencies || {}) || name in (json.devDependencies || {});
 		}
 
 		if(tsAuto) options.typescript = has("typescript") || fs.existsSync("tsconfig.json");

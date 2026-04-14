@@ -6,7 +6,11 @@
 		"types": [
 			"node"
 		],
-		"baseUrl": "./src",
+		"paths": {
+			"*": [
+				"./src/*"
+			]
+		},
 		"target": "ESNext",
 		"module": "ESNext",
 		"noEmit": true,
