@@ -2,6 +2,8 @@ import pluginVue from "eslint-plugin-vue";
 import globals from "globals";
 import pluginTs from "typescript-eslint";
 
+import { errorToWarn } from "utils";
+
 import type { ConfigOptions } from "options";
 import type { Config } from "@eslint/config-helpers";
 
@@ -11,8 +13,8 @@ export function addVue(result: Config[], options: ConfigOptions): void {
 	if(options.vue) {
 		const files = [VUE];
 		result.push(
-			...pluginVue.configs["flat/essential"].map(cfg => ({
-				...cfg,
+			...pluginVue.configs["flat/strongly-recommended"].map(cfg => ({
+				...errorToWarn(cfg),
 				files,
 			})),
 			{
@@ -28,8 +30,31 @@ export function addVue(result: Config[], options: ConfigOptions): void {
 				rules: {
 					"@stylistic/indent": "off", // see vue
 					"@stylistic/max-len": "off", // see vue
-					"vue/html-indent": ["warn", "tab"],
+					"vue/attributes-order": "warn",
+					"vue/block-order": ["warn", {
+						order: ["template", "script", "style"],
+					}],
+					"vue/component-api-style": "warn",
+					"vue/define-macros-order": ["warn", {
+						"order": ["defineOptions", "defineModel", "defineProps", "defineEmits", "defineSlots"],
+						"defineExposeLast": true,
+					}],
+					"vue/define-props-declaration": "warn",
+					"vue/html-closing-bracket-spacing": ["warn", {
+						"selfClosingTag": "never",
+					}],
+					"vue/html-comment-indent": ["warn", "tab"],
+					"vue/html-indent": ["warn", "tab", {
+						attribute: 1,
+						baseIndent: 1,
+						closeBracket: 0,
+						alignAttributesVertically: false,
+						ignores: [],
+					}],
 					"vue/html-self-closing": "warn",
+					"vue/max-attributes-per-line": ["warn", {
+						"singleline": { "max": 3 },
+					}],
 					"vue/max-len": ["warn", {
 						code: 200,
 						ignoreComments: true,
@@ -38,12 +63,17 @@ export function addVue(result: Config[], options: ConfigOptions): void {
 						tabWidth: 4,
 					}],
 					"vue/multi-word-component-names": "off",
+					"vue/multiline-html-element-content-newline": "warn",
 					"vue/no-mutating-props": ["warn", { shallowOnly: true }],
+					"vue/no-required-prop-with-default": "warn",
+					"vue/prefer-define-options": "warn",
+					"vue/prefer-use-template-ref": "warn",
 					"vue/script-indent": ["warn", "tab", {
 						baseIndent: 1,
 						ignores: [],
 						switchCase: 1,
 					}],
+					"vue/singleline-html-element-content-newline": "off",
 				},
 				settings: options.import && !Array.isArray(options.import) ? {
 					"import/extensions": [".vue"],
