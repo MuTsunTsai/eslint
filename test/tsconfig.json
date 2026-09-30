@@ -3,6 +3,7 @@
 		"rootDir": "../",
 		"outDir": "../build",
 		"isolatedModules": true,
+		"module": "esnext",
 		"moduleResolution": "bundler",
 		"paths": {
 			"*": [
@@ -15,14 +16,11 @@
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true,
-		// Since SWC 1.7.35 it no longer transpile decorators for esnext target,
-		// so we need to explicitly set a target other than esnext for ts-node + SWC to work
-		"target": "es2022",
+		"target": "esnext",
 		"lib": [
 			"ESNext"
 		],
 		"types": [
-			"mocha",
 			"node"
 		]
 	},

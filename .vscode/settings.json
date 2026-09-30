@@ -13,7 +13,6 @@
 		"*.js": "$(capture).prod.js, $(capture).min.js, $(capture).js.map",
 		"*.woff2": "$(capture).eot, $(capture).svg, $(capture).ttf, $(capture).woff",
 		".gitignore": ".gitattributes",
-		".mocharc.json": ".nycrc",
 		"README.md": "LICENSE.md, CONTRIBUTING.md",
 		"eslint.config.js": ".editorconfig",
 		"package.json": "pnpm-*.yaml, .npmrc, .browserslistrc, knip.config.ts"
@@ -21,8 +20,7 @@
 	"files.exclude": {
 		".rslib/": true
 	},
-	"mochaExplorer.multiFileSuites": true,
-	"mochaExplorer.nodeArgv": [
-		"--enable-source-maps"
+	"rstest.testFileGlobPattern": [
+		"test/specs/**/*.spec.ts"
 	]
 }

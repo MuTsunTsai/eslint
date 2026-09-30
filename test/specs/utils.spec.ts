@@ -1,17 +1,17 @@
-import { expect } from "chai";
+import { describe, it, expect } from "@rstest/core";
 
 import { extensionPartToRegExp, restrictGlobsToExtensions, restrictGlobToExtension } from "utils";
 
-describe("Utility", function() {
+describe("Utility", () => {
 
-	it("Converts extension to RegExp", function() {
+	it("Converts extension to RegExp", () => {
 		expect(extensionPartToRegExp("*")).to.eql(/\.[^\\/]*$/);
 		expect(extensionPartToRegExp("?s")).to.eql(/\.[^\\/]s$/);
 		expect(extensionPartToRegExp("*ts*")).to.eql(/\.[^\\/]*ts[^\\/]*$/);
 		expect(extensionPartToRegExp("?u?")).to.eql(/\.[^\\/]u[^\\/]$/);
 	});
 
-	it("Restricts glob to extension", function() {
+	it("Restricts glob to extension", () => {
 		expect(restrictGlobToExtension("src/ab", ".ts") === null).to.be.true;
 		expect(restrictGlobToExtension("src/ab**", ".ts")).to.equal("src/ab**.ts");
 		expect(restrictGlobToExtension("src\\**", ".ts")).to.equal("src\\**\\*.ts");
@@ -28,7 +28,7 @@ describe("Utility", function() {
 		expect(restrictGlobToExtension("src/**/n*me*", ".ts")).to.equal("src/**/n*me*.ts");
 	});
 
-	it("Restricts globs to extensions", function() {
+	it("Restricts globs to extensions", () => {
 		expect(restrictGlobsToExtensions(["src/**/*.{ts,vue}", "test/**"], [".ts", ".vue"]))
 			.to.eql(["src/**/*.ts", "src/**/*.vue", "test/**/*.ts", "test/**/*.vue"]);
 	});

@@ -13,9 +13,9 @@ export default defineConfig([
 			],
 		},
 		globals: {
-			esm: ["**/*.ts", "test/mocha.env.js"],
+			esm: ["**/*.ts"],
 		},
-		mocha: ["test/**"],
+		rstest: ["test/**"],
 	}),
 	{
 		rules: {
