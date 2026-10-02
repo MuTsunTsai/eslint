@@ -3,6 +3,57 @@ import pluginStyle from "@stylistic/eslint-plugin";
 import { errorToWarn } from "../utils";
 
 import type { Config } from "@eslint/config-helpers";
+import type { Rule } from "eslint";
+import type { Class } from "estree";
+
+type ClassNode = Class & {
+	implements?: Class["superClass"][];
+};
+
+type ClassListener = (node: ClassNode & Rule.NodeParentExtension) => void;
+
+/**
+ * Patches `@stylistic/indent` so that a class with only an `implements` clause
+ * is indented the same way as a class with an `extends` clause.
+ *
+ * The original rule only checks the heritage indentation when `superClass`
+ * exists, so it requires `implements` on a new line to have no indentation.
+ * We work around that by treating the first `implements` item as the
+ * `superClass`, since the rule only uses it to locate the preceding keyword.
+ *
+ * As of `@stylistic/eslint-plugin` v5.10.0, this is still not supported
+ * upstream, and there is no option for it either. This patch relies on the
+ * internal implementation of the rule (`checkHeritages`), so it should be
+ * re-checked when upgrading, and removed once upstream supports it.
+ */
+function patchIndent(): void {
+	type Rules = Record<string, Rule.RuleModule>;
+	const rules = pluginStyle.rules as unknown as Rules;
+	const indent = rules.indent!;
+	rules.indent = {
+		...indent,
+		create(context) {
+			const listeners = indent.create(context);
+			for(const type of ["ClassDeclaration", "ClassExpression"] as const) {
+				const listener = listeners[type] as ClassListener | undefined;
+				if(!listener) continue;
+				const patched: ClassListener =
+					node => listener(withImplements(node));
+				listeners[type] = patched;
+			}
+			return listeners;
+		},
+	};
+}
+
+function withImplements<T extends ClassNode>(node: T): T {
+	if(node.superClass || !node.implements?.length) return node;
+	return Object.create(node, {
+		superClass: { value: node.implements[0] },
+	}) as T;
+}
+
+patchIndent();
 
 const preset = errorToWarn(pluginStyle.configs.recommended);
 
@@ -85,8 +136,8 @@ export default [
 			"@stylistic/max-len": [
 				"warn",
 				{
-					code: 120,
-					ignoreComments: true,
+					code: 80,
+					ignoreUrls: true,
 					ignoreRegExpLiterals: true,
 					ignoreStrings: true,
 					ignoreTemplateLiterals: true,

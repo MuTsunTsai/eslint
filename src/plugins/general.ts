@@ -24,7 +24,7 @@ export default {
 		"max-lines-per-function": ["warn", { skipComments: true }],
 		"max-nested-callbacks": "warn",
 		"max-params": ["warn", MAX_PARAMS],
-		"new-cap": "warn",
+		"new-cap": ["warn", { newIsCapExceptions: ["this.constructor"] }],
 		"no-alert": "warn",
 		"no-array-constructor": "warn",
 		"no-await-in-loop": "warn",
