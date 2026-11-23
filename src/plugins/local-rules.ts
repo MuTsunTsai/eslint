@@ -16,16 +16,17 @@ export default {
 					Program(): void {
 						for(const comment of sourceCode.getAllComments()) {
 							const match = (/[^\s!-~]+/m).exec(comment.value);
-							if(match) {
-								const start = comment.range![0];
-								context.report({
-									loc: {
-										start: sourceCode.getLocFromIndex(start + 2 + match.index),
-										end: sourceCode.getLocFromIndex(start + 2 + match.index + match[0].length),
-									},
-									message: "Comments should use ASCII characters only.",
-								});
-							}
+							if(!match) continue;
+							// Skip the opening "//" or "/*" of the comment
+							const start = comment.range![0] + 2 + match.index;
+							const end = start + match[0].length;
+							context.report({
+								loc: {
+									start: sourceCode.getLocFromIndex(start),
+									end: sourceCode.getLocFromIndex(end),
+								},
+								message: "Comments should use ASCII characters only.",
+							});
 						}
 					},
 				};
@@ -52,7 +53,8 @@ export default {
 
 				function checkSpaceAfter<T extends Node>(node: T): void {
 					if(!node) return;
-					if(node.loc.start.line !== node.loc.end.line) return; // Not single-line
+					// Not single-line
+					if(node.loc.start.line !== node.loc.end.line) return;
 					const body = "consequent" in node ? node.consequent : node.body;
 					const token = sourceCode.getFirstToken(body)!;
 					const prev = sourceCode.getTokenBefore(token)!;

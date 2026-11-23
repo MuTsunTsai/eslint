@@ -23,7 +23,10 @@ const compat = new FlatCompat();
 
 export { stylistic, localRules, general };
 
-export function legacyPlugin(name: string, alias: string = name): FixupPluginDefinition {
+export function legacyPlugin(
+	name: string,
+	alias: string = name
+): FixupPluginDefinition {
 	const plugin = compat.plugins(name)[0]?.plugins?.[alias];
 	if(!plugin) throw new Error(`Unable to resolve plugin ${name} and/or alias ${alias}`);
 	return fixupPluginRules(plugin);
@@ -44,16 +47,17 @@ export function createConfig(options: ConfigOptions): Config[] {
 		const json = JSON.parse(file);
 
 		function has(name: string): boolean {
-			return name in (json.dependencies || {}) || name in (json.devDependencies || {});
+			return name in (json.dependencies || {}) ||
+				name in (json.devDependencies || {});
 		}
 
 		if(tsAuto) options.typescript = has("typescript") || fs.existsSync("tsconfig.json");
 		if(vueAuto) options.vue = has("vue");
 	}
 
-	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////
 	// Base
-	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////
 
 	if(options.ignores) {
 		result.push({
@@ -73,9 +77,9 @@ export function createConfig(options: ConfigOptions): Config[] {
 		});
 	}
 
-	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////
 	// General
-	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////
 
 	result.push(
 		{
@@ -96,9 +100,9 @@ export function createConfig(options: ConfigOptions): Config[] {
 		}
 	);
 
-	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////
 	// Plugins
-	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////
 
 	addTypeScript(result, options);
 	addPackageJson(result, options);
@@ -108,14 +112,14 @@ export function createConfig(options: ConfigOptions): Config[] {
 	addGlobals(result, options);
 	addTests(result, options);
 
-	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////
 	// Other
-	/////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////
 
 	result.push(
 		{
 			name: "ESLint",
-			files: ["eslint.config.mjs"],
+			files: ["eslint.config.{js,mjs,ts}"],
 			rules: {
 				...(options.typescript ? {
 					"@typescript-eslint/no-magic-numbers": "off",
@@ -130,7 +134,8 @@ export function createConfig(options: ConfigOptions): Config[] {
 			name: "Config files",
 			files: ["**/*.config.{js,ts,mjs}"],
 			rules: {
-				// Config files can often be very long, with a big `defineConfig()` function.
+				// Config files can often be very long,
+				// with a big `defineConfig()` function.
 				"max-lines-per-function": "off",
 				"max-lines": "off",
 			},

@@ -12,6 +12,7 @@ export const VUE = "**/*.vue";
 export function addVue(result: Config[], options: ConfigOptions): void {
 	if(options.vue) {
 		const files = [VUE];
+		const parser = options.typescript ? pluginTs.parser : undefined;
 		result.push(
 			...pluginVue.configs["flat/strongly-recommended"].map(cfg => ({
 				...errorToWarn(cfg),
@@ -22,7 +23,7 @@ export function addVue(result: Config[], options: ConfigOptions): void {
 				files,
 				languageOptions: {
 					parserOptions: {
-						parser: options.typescript ? pluginTs.parser : undefined,
+						parser,
 						extraFileExtensions: [".vue"],
 					},
 					globals: globals.browser,
@@ -36,12 +37,12 @@ export function addVue(result: Config[], options: ConfigOptions): void {
 					}],
 					"vue/component-api-style": "warn",
 					"vue/define-macros-order": ["warn", {
-						"order": ["defineOptions", "defineModel", "defineProps", "defineEmits", "defineSlots"],
-						"defineExposeLast": true,
+						order: ["defineOptions", "defineModel", "defineProps", "defineEmits", "defineSlots"],
+						defineExposeLast: true,
 					}],
 					"vue/define-props-declaration": "warn",
 					"vue/html-closing-bracket-spacing": ["warn", {
-						"selfClosingTag": "never",
+						selfClosingTag: "never",
 					}],
 					"vue/html-comment-indent": ["warn", "tab"],
 					"vue/html-indent": ["warn", "tab", {
@@ -53,7 +54,7 @@ export function addVue(result: Config[], options: ConfigOptions): void {
 					}],
 					"vue/html-self-closing": "warn",
 					"vue/max-attributes-per-line": ["warn", {
-						"singleline": { "max": 3 },
+						singleline: { max: 3 },
 					}],
 					"vue/max-len": ["warn", {
 						code: 200,

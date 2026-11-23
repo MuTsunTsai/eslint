@@ -6,6 +6,12 @@ import { errorToWarn } from "utils";
 import type { ConfigOptions } from "options";
 import type { Config } from "@eslint/config-helpers";
 
+type PackageOrder = NonNullable<ConfigOptions["package"]>;
+
+function getOrder(order: PackageOrder): string[] {
+	return Array.isArray(order) ? order : order(sortOrder);
+}
+
 export function addPackageJson(result: Config[], options: ConfigOptions): void {
 	result.push(
 		errorToWarn(pluginPackageJson.configs.recommended),
@@ -22,7 +28,7 @@ export function addPackageJson(result: Config[], options: ConfigOptions): void {
 				...(options.package ? {
 					"package-json/order-properties": [
 						"warn", {
-							order: Array.isArray(options.package) ? options.package : options.package(sortOrder),
+							order: getOrder(options.package),
 						},
 					],
 				} : {}),

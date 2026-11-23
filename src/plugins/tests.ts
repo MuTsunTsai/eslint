@@ -26,21 +26,25 @@ export function addTests(result: Config[], options: ConfigOptions): void {
 			}
 		);
 	}
-	const rstest = Array.isArray(options.rstest) ? { files: options.rstest } : options.rstest;
+	const rstest = Array.isArray(options.rstest) ?
+		{ files: options.rstest } : options.rstest;
 	if(rstest) {
 		result.push({
 			...pluginVitest.configs.recommended,
 			name: "Rstest",
 			files: rstest.files,
 			settings: {
-				// Rstest provides the same API as Vitest, only imported from a different package
+				// Rstest provides the same API as Vitest,
+				// only imported from a different package
 				vitest: { vitestImports: ["@rstest/core"] },
 			},
 			rules: {
 				...pluginVitest.configs.recommended.rules,
-				// Chai-style assertions such as `expect(x).to.be.true` are reported as uncalled matchers
+				// Chai-style assertions such as `expect(x).to.be.true`
+				// are reported as uncalled matchers
 				"vitest/valid-expect": "off",
-				// Allows sub-suites to be imported from other files, as in `describe("name", subSuite)`
+				// Allows sub-suites to be imported from other files,
+				// as in `describe("name", subSuite)`
 				"vitest/valid-describe-callback": "off",
 				"vitest/expect-expect": ["error", {
 					assertFunctionNames: ["expect", ...rstest.assertFunctionNames ?? []],
@@ -64,7 +68,11 @@ export function addTests(result: Config[], options: ConfigOptions): void {
 		});
 	}
 
-	const allTests = [...(options.mocha ?? []), ...(rstest?.files ?? []), ...(options.playwright ?? [])];
+	const allTests = [
+		...(options.mocha ?? []),
+		...(rstest?.files ?? []),
+		...(options.playwright ?? []),
+	];
 	if(allTests.length) {
 		result.push({
 			name: "General Tests",

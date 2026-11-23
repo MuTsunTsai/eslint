@@ -18,7 +18,10 @@ export function extensionPartToRegExp(extPart: string): RegExp {
 	return new RegExp("\\." + extPart.replace(/\?/g, "[^\\\\/]").replace(/\*/g, "[^\\\\/]*") + "$");
 }
 
-export function restrictGlobToExtension(glob: string, ext: string): string | null {
+export function restrictGlobToExtension(
+	glob: string,
+	ext: string
+): string | null {
 	if(!ext.startsWith(".")) {
 		throw new Error("Extension must start with a dot, e.g., '.ts'");
 	}
@@ -46,7 +49,10 @@ export function restrictGlobToExtension(glob: string, ext: string): string | nul
 	return null;
 }
 
-export function restrictGlobsToExtensions(globs: string[], ext: string[]): string[] {
+export function restrictGlobsToExtensions(
+	globs: string[],
+	ext: string[]
+): string[] {
 	return globs
 		.flatMap(f => expand(f))
 		.flatMap(f => ext.map(e => restrictGlobToExtension(f, e)))

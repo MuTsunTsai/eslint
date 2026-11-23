@@ -41,7 +41,8 @@ export interface ConfigOptions {
 		ignore?: string[];
 
 		/**
-		 * This option disable reporting of errors if a cycle is detected with at least one dynamic import.
+		 * This option disable reporting of errors if a cycle is detected
+		 * with at least one dynamic import.
 		 * @default true
 		 * @see https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-cycle.md#allowunsafedynamiccyclicdependency
 		 */
@@ -63,14 +64,18 @@ export interface ConfigOptions {
 	/** What files to use `eslint-plugin-mocha` */
 	mocha?: string[];
 
-	/** What files to use `@vitest/eslint-plugin` for Rstest, or detailed settings. */
+	/**
+	 * What files to use `@vitest/eslint-plugin` for Rstest,
+	 * or detailed settings.
+	 */
 	rstest?: string[] | {
 		/** What files to use `@vitest/eslint-plugin` for Rstest */
 		files: string[];
 
 		/**
-		 * Additional function names (other than `expect`) that are considered assertions,
-		 * such as custom assertion helpers. Supports wildcards (e.g. `"expect*"`).
+		 * Additional function names (other than `expect`)
+		 * that are considered assertions, such as custom assertion helpers.
+		 * Supports wildcards (e.g. `"expect*"`).
 		 * @see https://github.com/vitest-dev/eslint-plugin-vitest/blob/main/docs/rules/expect-expect.md
 		 */
 		assertFunctionNames?: string[];

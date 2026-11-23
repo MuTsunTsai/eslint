@@ -11,8 +11,11 @@ const importPlugin = fixupPluginRules(pluginImport);
 export function addImport(result: Config[], options: ConfigOptions): void {
 	if(options.import) {
 		// Downward compatibility
-		if(Array.isArray(options.import)) options.import = { files: options.import };
+		if(Array.isArray(options.import)) {
+			options.import = { files: options.import };
+		}
 
+		const { allowUnsafeDynamicCyclicDependency = true } = options.import;
 		const ts = pluginImport.flatConfigs.typescript;
 		result.push({
 			name: "Plugin:import",
@@ -27,7 +30,7 @@ export function addImport(result: Config[], options: ConfigOptions): void {
 					"warn",
 					{
 						ignoreExternal: true,
-						allowUnsafeDynamicCyclicDependency: options.import.allowUnsafeDynamicCyclicDependency ?? true,
+						allowUnsafeDynamicCyclicDependency,
 					},
 				],
 				"import/no-duplicates": "warn",
