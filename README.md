@@ -256,7 +256,10 @@ In all test files, `max-lines-per-function`, `max-classes-per-file`, `no-unused-
 and `@typescript-eslint/no-magic-numbers` are turned off.
 
 For Rstest, the rules of `@vitest/eslint-plugin` are applied to imports from `@rstest/core`.
-You can register custom assertion helpers so that `vitest/expect-expect` recognizes them:
+The plugin is registered under the `rstest` namespace,
+so the rules are named `rstest/*` instead of `vitest/*`
+(use these names in your overrides and `eslint-disable` comments, too).
+You can register custom assertion helpers so that `rstest/expect-expect` recognizes them:
 
 ```js
 rstest: {

@@ -6,6 +6,16 @@ import { restrictGlobsToExtensions } from "utils";
 
 import type { ConfigOptions } from "options";
 import type { Config } from "@eslint/config-helpers";
+import type { Linter } from "eslint";
+
+/** Renames the `vitest/*` rules to `rstest/*`. */
+function toRstest(rules: Partial<Linter.RulesRecord>): Linter.RulesRecord {
+	return Object.fromEntries(
+		Object.entries(rules).map(
+			([name, entry]) => [name.replace(/^vitest\//, "rstest/"), entry!]
+		)
+	);
+}
 
 export function addTests(result: Config[], options: ConfigOptions): void {
 	if(options.mocha) {
@@ -30,35 +40,40 @@ export function addTests(result: Config[], options: ConfigOptions): void {
 		{ files: options.rstest } : options.rstest;
 	if(rstest) {
 		result.push({
-			...pluginVitest.configs.recommended,
 			name: "Rstest",
 			files: rstest.files,
+			plugins: {
+				// Registered under the "rstest" namespace,
+				// so that the rules are reported as `rstest/*`
+				rstest: pluginVitest,
+			},
 			settings: {
 				// Rstest provides the same API as Vitest,
-				// only imported from a different package
+				// only imported from a different package.
+				// The plugin always reads its settings from the "vitest" key.
 				vitest: { vitestImports: ["@rstest/core"] },
 			},
 			rules: {
-				...pluginVitest.configs.recommended.rules,
+				...toRstest(pluginVitest.configs.recommended.rules),
 				// Chai-style assertions such as `expect(x).to.be.true`
 				// are reported as uncalled matchers
-				"vitest/valid-expect": "off",
+				"rstest/valid-expect": "off",
 				// Allows sub-suites to be imported from other files,
 				// as in `describe("name", subSuite)`
-				"vitest/valid-describe-callback": "off",
-				"vitest/expect-expect": ["error", {
+				"rstest/valid-describe-callback": "off",
+				"rstest/expect-expect": ["error", {
 					assertFunctionNames: ["expect", ...rstest.assertFunctionNames ?? []],
 				}],
-				"vitest/no-disabled-tests": "off",
-				"vitest/no-duplicate-hooks": "error",
-				"vitest/padding-around-after-all-blocks": "warn",
-				"vitest/padding-around-after-each-blocks": "warn",
-				"vitest/padding-around-before-all-blocks": "warn",
-				"vitest/padding-around-before-each-blocks": "warn",
-				"vitest/padding-around-describe-blocks": "warn",
-				"vitest/padding-around-test-blocks": "warn",
+				"rstest/no-disabled-tests": "off",
+				"rstest/no-duplicate-hooks": "error",
+				"rstest/padding-around-after-all-blocks": "warn",
+				"rstest/padding-around-after-each-blocks": "warn",
+				"rstest/padding-around-before-all-blocks": "warn",
+				"rstest/padding-around-before-each-blocks": "warn",
+				"rstest/padding-around-describe-blocks": "warn",
+				"rstest/padding-around-test-blocks": "warn",
 			},
-		} as Config);
+		});
 	}
 	if(options.playwright) {
 		result.push({
